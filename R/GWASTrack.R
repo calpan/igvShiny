@@ -86,9 +86,9 @@ GWASTrack <- function(trackName,
                       maxY = 30) {
   
   data.class <- class(data)
-  stopifnot(data.class %in% c("data.frame", "character"))
+  stopifnot(length(intersect(data.class, c("data.frame", "character"))) > 0)
   
-  if (data.class == "data.frame") {
+  if ("data.frame" %in% data.class) {
     mode <- "local.url"
     # as written, assumes ./tracks exists, which need not be
     # url <- tempfile(tmpdir="tracks", fileext=".gwas") # expanded in javascript # nolint
@@ -100,7 +100,7 @@ GWASTrack <- function(trackName,
       stop(sprintf("could not create %s\n", tdir))
     url <-
       tempfile(tmpdir = tdir, fileext = ".gwas") # expanded in javascript
-    write.table(
+    data.table::fwrite(
       data,
       sep = "\t",
       row.names = FALSE,
@@ -109,7 +109,7 @@ GWASTrack <- function(trackName,
     )
   }
   
-  if (data.class == "character") {
+  if ("character" %in% data.class) {
     if (!url.exists(data)) {
       # was a legitimate url provided?
       error.message <-
